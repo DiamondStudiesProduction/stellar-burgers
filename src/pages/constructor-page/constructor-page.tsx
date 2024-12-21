@@ -1,19 +1,32 @@
-import { useSelector } from '../../services/store';
+import { AppDispatch, RootState, useSelector } from '../../services/store';
 
 import styles from './constructor-page.module.css';
 
 import { BurgerIngredients } from '../../components';
 import { BurgerConstructor } from '../../components';
 import { Preloader } from '../../components/ui';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { addBun } from '../../services/slice';
 
 export const ConstructorPage: FC = () => {
   /** TODO: взять переменную из стора */
-  const isIngredientsLoading = false;
+  const dispatch: AppDispatch = useDispatch();
+  const { isLoading, buns, mains, sauces } = useSelector(
+    (store: RootState) => store.BurgerIngredients
+  );
+  const { constructorItems } = useSelector(
+    (store: RootState) => store.ConstructorItems
+  );
 
+  useEffect(() => {
+    if (buns.length > 0) {
+      dispatch(addBun(buns[0]));
+    }
+  }, [buns, dispatch]);
   return (
     <>
-      {isIngredientsLoading ? (
+      {isLoading ? (
         <Preloader />
       ) : (
         <main className={styles.containerMain}>
@@ -23,8 +36,8 @@ export const ConstructorPage: FC = () => {
             Соберите бургер
           </h1>
           <div className={`${styles.main} pl-5 pr-5`}>
-            <BurgerIngredients />
-            <BurgerConstructor />
+            <BurgerIngredients buns={buns} mains={mains} sauces={sauces} />
+            <BurgerConstructor constructorItems={constructorItems} />
           </div>
         </main>
       )}

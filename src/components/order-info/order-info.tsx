@@ -1,26 +1,39 @@
-import { FC, useMemo } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../services/store';
+import { getOrderByNumberApiThunk } from '../../services/slice';
+import { useParams } from 'react-router-dom';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const { number } = useParams();
+  const dispatch: AppDispatch = useDispatch();
 
-  const ingredients: TIngredient[] = [];
+  const { orderData, isLoading } = useSelector(
+    (store: RootState) => store.orders
+  );
+  const { ingredients } = useSelector(
+    (store: RootState) => store.BurgerIngredients
+  );
+
+  useEffect(() => {
+    dispatch(getOrderByNumberApiThunk(Number(number)));
+  }, [dispatch, number]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
-
+    if (
+      isLoading.orderByNumber ||
+      !orderData ||
+      !ingredients ||
+      !orderData.ingredients ||
+      orderData.ingredients.length === 0
+    ) {
+      return null;
+    }
     const date = new Date(orderData.createdAt);
 
     type TIngredientsWithCount = {
@@ -45,7 +58,6 @@ export const OrderInfo: FC = () => {
       },
       {}
     );
-
     const total = Object.values(ingredientsInfo).reduce(
       (acc, item) => acc + item.price * item.count,
       0
