@@ -16,12 +16,11 @@ const ProtectedRoute = ({
   if (isLoading.isAuthLoading) {
     return <Preloader />;
   }
-
   if (!user && !onlyUnAuth) {
     return <Navigate replace to='/login' state={{ from: location }} />;
   }
   if (user && onlyUnAuth) {
-    return <Navigate replace to='/' />;
+    return <Navigate replace to='/' />; //{location.state?.from ? location.state.from : '/'}
   }
 
   return children;

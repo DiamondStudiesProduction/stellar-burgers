@@ -15,7 +15,12 @@ import {
   updateUserApi
 } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { TIngredient, TOrder, TUser } from '@utils-types';
+import {
+  TConstructorIngredient,
+  TIngredient,
+  TOrder,
+  TUser
+} from '@utils-types';
 import { deleteCookie, getCookie, setCookie } from '../../src/utils/cookie';
 
 export const getBurgerIngredientsThunk = createAsyncThunk(
@@ -162,12 +167,12 @@ interface BurgerIngredientsState {
 export interface ConstructorItemsState {
   constructorItems: {
     bun: TIngredient | null;
-    ingredients: TIngredient[];
+    ingredients: TConstructorIngredient[];
   };
 }
 
 export interface UserState {
-  user: TUser | any;
+  user: TUser | null;
   isLoading: {
     isAuthLoading: boolean;
     logoutLoading: boolean;
@@ -328,7 +333,7 @@ export const userSlice = createSlice({
         state.isLoading.registerLoading = false;
       })
       .addCase(registrUserThunk.fulfilled, (state, action) => {
-        state.user = action.payload?.user;
+        state.user = action.payload?.user ?? null;
         state.isLoading.registerLoading = false;
       })
       .addCase(getUserApiThunk.pending, (state) => {

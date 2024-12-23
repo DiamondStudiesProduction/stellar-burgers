@@ -3,9 +3,16 @@ import { useInView } from 'react-intersection-observer';
 
 import { TTabMode } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
-export const BurgerIngredients: FC<any> = ({ buns, mains, sauces }) => {
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../services/store';
+import { addBun } from '../../services/slice';
+export const BurgerIngredients: FC = () => {
   /** TODO: взять переменные из стора */
 
+  const { buns, mains, sauces } = useSelector(
+    (store: RootState) => store.BurgerIngredients
+  );
+  const dispatch: AppDispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);
   const titleMainRef = useRef<HTMLHeadingElement>(null);
@@ -22,6 +29,12 @@ export const BurgerIngredients: FC<any> = ({ buns, mains, sauces }) => {
   const [saucesRef, inViewSauces] = useInView({
     threshold: 0
   });
+
+  useEffect(() => {
+    if (buns.length > 0) {
+      dispatch(addBun(buns[0]));
+    }
+  }, [buns, dispatch]);
 
   useEffect(() => {
     if (inViewBuns) {

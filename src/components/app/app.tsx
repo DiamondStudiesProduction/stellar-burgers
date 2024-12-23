@@ -32,11 +32,9 @@ const App = () => {
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchWithRefreshThunk());
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch(getBurgerIngredientsThunk());
   }, [dispatch]);
+
   const location = useLocation();
   const background = location.state?.background;
 
@@ -107,6 +105,7 @@ const App = () => {
         />
         <Route path='/feed/:number' element={<OrderInfo />} />
       </Routes>
+
       {background && (
         <Routes>
           <Route

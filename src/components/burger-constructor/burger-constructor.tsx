@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { TConstructorIngredient, TIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import {
@@ -10,17 +10,20 @@ import { AppDispatch, RootState } from '../../services/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-export const BurgerConstructor: FC<any> = ({ constructorItems }) => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const dispatch: AppDispatch = useDispatch();
+export const BurgerConstructor: FC = () => {
   const { orderModalData, orderRequest } = useSelector(
     (store: RootState) => store.orderBurger
   );
-  const navigate = useNavigate();
+  const { constructorItems } = useSelector(
+    (store: RootState) => store.ConstructorItems
+  );
   const { user } = useSelector((store: RootState) => store.user);
+  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+
   const onOrderClick = () => {
     if (user) {
-      if (!constructorItems.bun || constructorItems.orderRequest) {
+      if (!constructorItems.bun || orderRequest) {
         return;
       } else {
         const ingredientsId = constructorItems.ingredients.map(
@@ -28,9 +31,9 @@ export const BurgerConstructor: FC<any> = ({ constructorItems }) => {
         );
         ingredientsId.unshift(constructorItems.bun._id);
         ingredientsId.push(constructorItems.bun._id);
-        dispatch(orderBurgerApiThunk(ingredientsId)).then(
-          (res: any) => res.payload.success && dispatch(deleteAll())
-        );
+        dispatch(orderBurgerApiThunk(ingredientsId)).then((res) => {
+          res.payload && dispatch(deleteAll());
+        });
       }
     } else if (!user) {
       navigate('/login', { replace: true });
