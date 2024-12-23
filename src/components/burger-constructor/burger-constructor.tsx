@@ -31,9 +31,10 @@ export const BurgerConstructor: FC = () => {
         );
         ingredientsId.unshift(constructorItems.bun._id);
         ingredientsId.push(constructorItems.bun._id);
-        dispatch(orderBurgerApiThunk(ingredientsId)).then((res) => {
-          res.payload && dispatch(deleteAll());
-        });
+        dispatch(orderBurgerApiThunk(ingredientsId))
+          .unwrap()
+          .then(() => dispatch(deleteAll()))
+          .catch(() => {});
       }
     } else if (!user) {
       navigate('/login', { replace: true });

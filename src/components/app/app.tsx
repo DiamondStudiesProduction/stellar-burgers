@@ -18,8 +18,9 @@ import ProtectedRoute from '../protected-route';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../services/store';
 import {
-  fetchWithRefreshThunk,
-  getBurgerIngredientsThunk
+  changeUserCheck,
+  getBurgerIngredientsThunk,
+  getUserApiThunk
 } from '../../services/slice';
 import { useEffect } from 'react';
 
@@ -31,9 +32,12 @@ const App = () => {
 
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchWithRefreshThunk());
+    dispatch(getUserApiThunk())
+      .unwrap()
+      .catch(() => {})
+      .finally(() => dispatch(changeUserCheck()));
     dispatch(getBurgerIngredientsThunk());
-  }, [dispatch]);
+  }, []);
 
   const location = useLocation();
   const background = location.state?.background;

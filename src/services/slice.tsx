@@ -1,5 +1,4 @@
 import {
-  fetchWithRefresh,
   forgotPasswordApi,
   getFeedsApi,
   getIngredientsApi,
@@ -21,7 +20,7 @@ import {
   TOrder,
   TUser
 } from '@utils-types';
-import { deleteCookie, getCookie, setCookie } from '../../src/utils/cookie';
+import { deleteCookie, setCookie } from '../../src/utils/cookie';
 
 export const getBurgerIngredientsThunk = createAsyncThunk(
   'BurgerIngredients/getBurgerIngredients',
@@ -55,26 +54,6 @@ export const getUserApiThunk = createAsyncThunk('user/getUserApi', async () => {
   const response = await getUserApi();
   return response;
 });
-
-type fetchWithRefreshThunkResponse = {
-  success: boolean;
-  user: TUser;
-};
-
-export const fetchWithRefreshThunk = createAsyncThunk(
-  'user/userFetchWithRefresh',
-  async () => {
-    const response = await fetchWithRefresh(
-      'https://norma.nomoreparties.space/api/auth/user',
-      {
-        headers: {
-          authorization: getCookie('accessToken')
-        } as HeadersInit
-      }
-    );
-    return response as fetchWithRefreshThunkResponse;
-  }
-);
 
 export const logoutApiThunk = createAsyncThunk('user/logout', async () => {
   const response = await logoutApi().then(() => {
@@ -181,6 +160,7 @@ export interface UserState {
     getUserLoading: boolean;
     updateUserLoading: boolean;
   };
+  userCheck: boolean;
 }
 
 interface OrderBurger {
@@ -231,7 +211,8 @@ const initialState: {
       registerLoading: false,
       getUserLoading: false,
       updateUserLoading: false
-    }
+    },
+    userCheck: false
   },
   orderBurger: { orderRequest: false, orderModalData: null },
   orders: {
@@ -323,7 +304,11 @@ export const constructorItemsSlice = createSlice({
 export const userSlice = createSlice({
   name: 'user',
   initialState: initialState.user,
-  reducers: {},
+  reducers: {
+    changeUserCheck: (state) => {
+      state.userCheck = true;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(registrUserThunk.pending, (state) => {
@@ -345,16 +330,6 @@ export const userSlice = createSlice({
       .addCase(getUserApiThunk.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.isLoading.getUserLoading = false;
-      })
-      .addCase(fetchWithRefreshThunk.pending, (state) => {
-        state.isLoading.isAuthLoading = true;
-      })
-      .addCase(fetchWithRefreshThunk.rejected, (state) => {
-        state.isLoading.isAuthLoading = false;
-      })
-      .addCase(fetchWithRefreshThunk.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.isLoading.isAuthLoading = false;
       })
       .addCase(logoutApiThunk.pending, (state) => {
         state.isLoading.logoutLoading = true;
@@ -467,3 +442,4 @@ export const {
 } = constructorItemsSlice.actions;
 export const { findIngredient } = burgerIngredientsSlice.actions;
 export const { orderModalDataIsNull } = orderBurgerSlice.actions;
+export const { changeUserCheck } = userSlice.actions;

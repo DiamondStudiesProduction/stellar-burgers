@@ -10,17 +10,18 @@ const ProtectedRoute = ({
   children: React.ReactElement;
   onlyUnAuth?: boolean;
 }) => {
-  const { user, isLoading } = useSelector((store: RootState) => store.user);
+  const { user, userCheck } = useSelector((store: RootState) => store.user);
   const location = useLocation();
-
-  if (isLoading.isAuthLoading) {
+  if (!userCheck) {
     return <Preloader />;
+  }
+  if (user && onlyUnAuth) {
+    return (
+      <Navigate replace to={location.state?.from ? location.state.from : '/'} />
+    );
   }
   if (!user && !onlyUnAuth) {
     return <Navigate replace to='/login' state={{ from: location }} />;
-  }
-  if (user && onlyUnAuth) {
-    return <Navigate replace to='/' />; //{location.state?.from ? location.state.from : '/'}
   }
 
   return children;
