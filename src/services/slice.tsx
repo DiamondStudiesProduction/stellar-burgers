@@ -12,7 +12,7 @@ import {
   TLoginData,
   TRegisterData,
   updateUserApi
-} from '@api';
+} from '../utils/burger-api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   TConstructorIngredient,
@@ -341,7 +341,7 @@ export const userSlice = createSlice({
         state.user = null;
         state.isLoading.logoutLoading = false;
       })
-      .addCase(loginUserApiThunk.pending, (state) => {
+      .addCase(loginUserApiThunk.pending, (state, action) => {
         state.isLoading.loginLoading = true;
       })
       .addCase(loginUserApiThunk.rejected, (state) => {

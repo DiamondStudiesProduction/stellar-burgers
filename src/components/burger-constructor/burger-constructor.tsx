@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { TConstructorIngredient, TIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import {
@@ -62,6 +62,7 @@ export const BurgerConstructor: FC = () => {
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
+      data-cy={'place-an-order'}
     />
   );
 };
