@@ -8,7 +8,7 @@ import { RootState } from 'src/services/store';
 export const IngredientsCategory = forwardRef<
   HTMLUListElement,
   TIngredientsCategoryProps
->(({ title, titleRef, ingredients }, ref) => {
+>(({ title, titleRef, ingredients, ...rest }, ref) => {
   /** TODO: взять переменную из стора */
   const { constructorItems } = useSelector(
     (store: RootState) => store.ConstructorItems
@@ -32,6 +32,7 @@ export const IngredientsCategory = forwardRef<
       ingredients={ingredients}
       ingredientsCounters={ingredientsCounters}
       ref={ref}
+      {...rest}
     />
   );
 });
